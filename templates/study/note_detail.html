@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}{{ note.title }}{% endblock %}
+{% block content %}
+<h2>{{ note.title }}</h2>
+<p class="text-muted">Created: {{ note.created_at|date:"M d, Y H:i" }}</p>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h5>📄 Original Notes</h5>
+        <p>{{ note.content|linebreaks }}</p>
+    </div>
+</div>
+
+{% if summary %}
+<div class="card mb-3 border-success">
+    <div class="card-body">
+        <h5>✨ Summary</h5>
+        <p>{{ summary|linebreaks }}</p>
+    </div>
+</div>
+{% else %}
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="summarize" class="btn btn-primary">Generate Summary</button>
+</form>
+{% endif %}
+
+<hr>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="quiz" class="btn btn-warning">Generate Quiz</button>
+</form>
+
+{% if quiz %}
+<div class="card mt-3 border-info">
+    <div class="card-body">
+        <h5>📝 Quiz</h5>
+        {% for q in quiz %}
+            <p><strong>Q{{ forloop.counter }}: {{ q.question }}</strong></p>
+            <ul>
+                {% for opt in q.options %}
+                    <li>{{ opt }}</li>
+                {% endfor %}
+            </ul>
+            <p class="text-success"><em>Answer: {{ q.answer }}</em></p>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<a href="{% url 'note_list' %}" class="btn btn-secondary mt-3">⬅ Back to Notes</a>
+{% endblock %}

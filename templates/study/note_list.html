@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}My Notes{% endblock %}
+{% block content %}
+{% if not user.is_authenticated %}
+<h2 class="mb-3">Please log in to view your notes</h2>
+<form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Login</button>
+    <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
+</form>
+{% else %}
+<h2 class="mb-3">📄 My Notes</h2>
+
+<a href="{% url 'note_create' %}" class="btn btn-success mb-3">➕ Add New Note</a>
+
+{% if notes %}
+    <ul class="list-group">
+        {% for note in notes %}
+            <li class="list-group-item">
+                <a href="{% url 'note_detail' note.pk %}"><strong>{{ note.title }}</strong></a>
+                <br>
+                <small class="text-muted">{{ note.created_at|date:"M d, Y H:i" }}</small>
+                {% if note.uploaded_file %}
+                    <br>
+                    <a href="{{ note.uploaded_file.url }}" target="_blank">View Uploaded File</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No notes yet. Add your first note!</p>
+{% endif %}
+{% endif %}
+{% endblock %}
